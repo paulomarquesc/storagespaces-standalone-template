@@ -1,0 +1,290 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "_artifactsLocation": {
+      "type": "string",
+      "metadata": {
+        "description": "Auto-generated container in staging storage account to receive post-build staging folder upload"
+      }
+    },
+    "_artifactsLocationSasToken": {
+      "type": "securestring",
+      "metadata": {
+        "description": "Auto-generated token to access _artifactsLocation"
+      }
+    },
+    "location": {
+      "type": "string",
+      "metadata": {
+        "description": "Location where the resources of this template will be deployed to"
+      },
+      "defaultValue": "westus2"
+    },
+    "adminUsername": {
+      "type": "string",
+      "metadata": {
+        "description": "Name of admin account of the VMs, this name cannot be well know names, like root, admin, administrator, guest, etc."
+      },
+      "defaultValue": "pmcadmin"
+    },
+    "adminPassword": {
+      "type": "string",
+      "metadata": {
+        "description": "Admin password."
+      }
+    },
+    "vmName": {
+      "type": "string",
+      "metadata": {
+        "description": "VM Name"
+      },
+      "defaultValue": "FileServer"
+    },
+    "vmSize": {
+      "type": "string",
+      "metadata": {
+        "description": "VM Size"
+      },
+      "defaultValue": "Standard_E32s_v3 "
+    },
+    "dataDiskSizeGB": {
+      "type": "int",
+      "metadata": {
+        "description": "Size of each attached datadisk"
+      },
+      "defaultValue": 2048
+    },
+    "dataDiskCount": {
+      "type": "int",
+      "metadata": {
+        "description": "Number of data disks"
+      },
+      "defaultValue": 7
+    },
+    "vnetRg": {
+      "type": "string",
+      "metadata": {
+        "description": "Existing Virtual Network Resource Group."
+      }
+    },
+    "vnetName": {
+      "type": "string",
+      "metadata": {
+        "description": "Existing Virtual Network Name."
+      }
+    },
+    "subnetName": {
+      "type": "string",
+      "metadata": {
+        "description": "Existing Subnet Name where Single Mode Storage Spaces Server will be attached."
+      }
+    },
+    "storagePoolName": {
+      "type": "string",
+      "metadata": {
+        "description": "Name of the storage pool to be created"
+      },
+      "defaultValue": "StoragePool1"
+    },
+    "VirtualDiskName": {
+      "type": "string",
+      "metadata": {
+        "description": "Virtual Disk Name to be created"
+      },
+      "defaultValue": "VirtualDisk1"
+    },
+    "FolderName": {
+      "type": "string",
+      "metadata": {
+        "description": "Name of a folder to be created within the volume that will be used as shared folder"
+      },
+      "defaultValue": "data"
+    },
+    "SharedFolderName": {
+      "type": "string",
+      "metadata": {
+        "description": "Name of the shared folder"
+      },
+      "defaultValue": "share"
+    },
+    "FullAccess": {
+      "type": "string",
+      "metadata": {
+        "description": "User or group that will have full access to the share"
+      },
+      "defaultValue": "Everyone"
+    }
+  },
+  "variables": {
+    "libraryBaseUrl": "[concat(parameters('_artifactsLocation'),'/_library')]",
+    "deploymentUniqueString": "[uniqueString(concat(deployment().name,resourceGroup().id))]",
+    "deploymentConfig": {
+      "libraryBaseUrl": "[variables('libraryBaseUrl')]",
+      "sasToken": "[parameters('_artifactsLocationSasToken')]",
+      "libraryItems": {
+        "getRefUri": "[concat(variables('libraryBaseUrl'),'/other/getReference.json',parameters('_artifactsLocationSasToken'))]",
+        "updateVnetDnsUri": "[concat(variables('libraryBaseUrl'),'/other/updateVnetDnsSettings.json',parameters('_artifactsLocationSasToken'))]",
+        "updateVmDnsUri": "[concat(variables('libraryBaseUrl'),'/other/updateVmDnsSettings.json',parameters('_artifactsLocationSasToken'))]",
+        "changeVmPrivateIpAddressTypeUri": "[concat(variables('libraryBaseUrl'),'/other/changeVmIpAddressType.json',parameters('_artifactsLocationSasToken'))]",
+        "avSetBuildingBlockUri": "[concat(variables('libraryBaseUrl'),'/Microsoft.Compute/availabilitySet.json',parameters('_artifactsLocationSasToken'))]",
+        "vmBuildingBlockUri": "[concat(variables('libraryBaseUrl'),'/Microsoft.Compute/virtualMachine.json',parameters('_artifactsLocationSasToken'))]",
+        "vmLinuxBuildingBlockUri": "[concat(variables('libraryBaseUrl'),'/Microsoft.Compute/virtualMachineLinux.json',parameters('_artifactsLocationSasToken'))]",
+        "vmExtensionBuildingBlockUri": "[concat(variables('libraryBaseUrl'),'/Microsoft.Compute/vmExtension.json',parameters('_artifactsLocationSasToken'))]",
+        "vNetBuildingBlockUri": "[concat(variables('libraryBaseUrl'),'/Microsoft.Network/virtualNetwork.json',parameters('_artifactsLocationSasToken'))]",
+        "nicBuildingBlockUri": "[concat(variables('libraryBaseUrl'),'/Microsoft.Network/networkInterface.json',parameters('_artifactsLocationSasToken'))]",
+        "nsgBuildingBlockUri": "[concat(variables('libraryBaseUrl'),'/Microsoft.Network/networkSecurityGroup.json',parameters('_artifactsLocationSasToken'))]",
+        "publicIpAddressBuildingBlockUri": "[concat(variables('libraryBaseUrl'),'/Microsoft.Network/publicIp.json',parameters('_artifactsLocationSasToken'))]",
+        "lbBuildingBlockUri": "[concat(variables('libraryBaseUrl'),'/Microsoft.Network/loadBalancer.json',parameters('_artifactsLocationSasToken'))]",
+        "vpnGatewayBuildingBlockUri": "[concat(variables('libraryBaseUrl'),'/Microsoft.Network/vpnGateway.json',parameters('_artifactsLocationSasToken'))]",
+        "s2sConnectionBuildingBlockUri": "[concat(variables('libraryBaseUrl'),'/Microsoft.Network/vnet2VnetConnection.json',parameters('_artifactsLocationSasToken'))]",
+        "joinVmToDomainUri": "[concat(variables('libraryBaseUrl'),'/other/joinVmToDomain.json',parameters('_artifactsLocationSasToken'))]",
+        "applicationGatewayUri": "[concat(variables('libraryBaseUrl'),'/Microsoft.Network/applicationGateway.json',parameters('_artifactsLocationSasToken'))]"
+      },
+      "apiVersions": {
+        "nicApiVersion": "2017-06-01",
+        "deploymentApiVersion": "2017-05-10",
+        "vmApiVersion": "2017-03-30",
+        "publicIpApiVersion": "2017-11-01",
+        "vnetApiVersion": "2018-07-01",
+        "nsgApiVersion": "2017-06-01",
+        "vmExtensionApiVersion": "2015-06-15",
+        "subnetApiVersion": "2017-10-01",
+        "applicationGwApiVersion": "2017-10-01",
+        "availabilitySetApiVersion": "2017-03-30"
+      }
+    },
+    "vnetId": "[resourceId(parameters('vnetRg'),'Microsoft.Network/virtualNetworks',parameters('vnetName'))]",
+    "subnetId": "[concat(variables('vnetId'),'/subnets/',parameters('subnetName'))]",
+    "installParams":"[concat(' -StoragePoolName ', parameters('storagePoolName'), ' -VirtualDiskName ', parameters('virtualDiskName'), ' -FolderName ', parameters('folderName'), ' -SharedFolderName ',  parameters('SharedFolderName'), ' -FullAccess ', parameters('fullAccess'))]",
+    "vmConfig": {
+      "name": "[parameters('VMName')]",
+      "storageAccountType": "Premium_LRS",
+      "subnetId": "[variables('subnetId')]",
+      "vmSize": "[parameters('vmSize')]",
+      "imageInfo": {
+        "publisher": "MicrosoftWindowsServer",
+        "offer": "WindowsServer",
+        "sku": "2016-Datacenter",
+        "version": "latest"
+      },
+      "dataDiskSizeGb": "[parameters('dataDiskSizeGB')]",
+      "dataDiskCount": "[parameters('dataDiskCount')]"
+    }
+  },
+  "resources": [
+    {
+      "condition": true,
+      "comments": "VM Deployment",
+      "name": "[concat(variables('deploymentUniqueString'),'-',variables('vmConfig').name)]",
+      "type": "Microsoft.Resources/deployments",
+      "apiVersion": "[variables('deploymentConfig').apiVersions.deploymentApiVersion]",
+      "dependsOn": [],
+      "properties": {
+        "mode": "Incremental",
+        "templateLink": {
+          "uri": "[variables('deploymentConfig').libraryItems.vmBuildingBlockUri]",
+          "contentVersion": "1.0.0.0"
+        },
+        "parameters": {
+          "deploymentUniqueString": {
+            "value": "[variables('deploymentUniqueString')]"
+          },
+          "nicApiVersion": {
+            "value": "[variables('deploymentConfig').apiVersions.nicApiVersion]"
+          },
+          "location": {
+            "value": "[parameters('location')]"
+          },
+          "completeVmNameProvided": {
+            "value": "yes"
+          },
+          "vmNamePrefix": {
+            "value": "[variables('vmConfig').name]"
+          },
+          "vmSize": {
+            "value": "[variables('vmConfig').vmSize]"
+          },
+          "adminUserName": {
+            "value": "[parameters('adminUserName')]"
+          },
+          "imageInfo": {
+            "value": "[variables('vmConfig').imageInfo]"
+          },
+          "sasToken": {
+            "value": "[parameters('_artifactsLocationSasToken')]"
+          },
+          "attachDataDisks": {
+            "value": "yes"
+          },
+          "dataDiskCount": {
+            "value": "[variables('vmConfig').dataDiskCount]"
+          },
+          "dataDiskSizeGb": {
+            "value": "[variables('vmConfig').dataDiskSizeGb]"
+          },
+          "storageAccountType": {
+            "value": "[variables('vmConfig').storageAccountType]"
+          },
+          "useAvailabilitySet": {
+            "value": "no"
+          },
+          "subnetId": {
+            "value": "[variables('vmConfig').subnetId]"
+          },
+          "enableAcceleratedNetworking": {
+            "value": true
+          },
+          "usePublicIpAddress": {
+            "value": "no"
+          },
+          "includeVmInAppGwBe": {
+            "value": "no"
+          },
+          "attachNsg": {
+            "value": "no"
+          },
+          "configureDnsServers": {
+            "value": "no"
+          },
+          "privateIpAddressType": {
+            "value": "Dynamic"
+          },
+          "adminPassword": {
+            "value": "[parameters('adminPassword')]"
+          },
+          "usePlan": {
+            "value": "no"
+          }
+        }
+      }
+    },
+
+    {
+      "condition": true,
+      "comments": "Configure File Share",
+      "type": "Microsoft.Compute/virtualMachines/extensions",
+      "name": "[concat(variables('vmConfig').name,'/CustomScript')]",
+      "apiVersion": "[variables('deploymentConfig').apiVersions.vmExtensionApiVersion]",
+      "location": "[parameters('location')]",
+      "dependsOn": [
+        "[concat(variables('deploymentUniqueString'),'-',variables('vmConfig').name)]"
+      ],
+      "properties": {
+        "publisher": "Microsoft.Compute",
+        "type": "CustomScriptExtension",
+        "typeHandlerVersion": "1.9",
+        "autoUpgradeMinorVersion": true,
+        "settings": {
+          "fileUris": [
+            "[concat(parameters('_artifactsLocation'),'/scripts/storagespaces-setup.ps1', parameters('_artifactsLocationSasToken'))]"
+          ]
+        },
+        "protectedSettings": {
+          "commandToExecute": "[concat('powershell -ExecutionPolicy Unrestricted -File ./scripts/storagespaces-setup.ps1',' ', variables('installParams'))]"
+        }
+      }
+    }
+  ],
+  "outputs": {}
+}

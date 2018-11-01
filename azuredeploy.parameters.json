@@ -1,0 +1,48 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentParameters.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "location": {
+      "value": "eastus"
+    },
+    "adminUsername": {
+      "value": "pmcadmin"
+    },
+    "vmName": {
+      "value": "FileServer"
+    },
+    "vmSize": {
+      "value": "Standard_E32s_v3 "
+    },
+    "dataDiskSizeGB": {
+      "value": 2048
+    },
+    "dataDiskCount": {
+      "value": 7
+    },
+    "vnetRg": {
+      "value":"test-rg"
+    },
+    "vnetName": {
+      "value":"test-vnet"
+    },
+    "subnetName": {
+      "value":"default"
+    },
+    "storagePoolName": {
+      "value": "StoragePool1"
+    },
+    "VirtualDiskName": {
+      "value": "VirtualDisk1"
+    },
+    "FolderName": {
+      "value": "data"
+    },
+    "SharedFolderName": {
+      "value": "share"
+    },
+    "FullAccess": {
+      "value": "Everyone"
+    }
+  }
+}
