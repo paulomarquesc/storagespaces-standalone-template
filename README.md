@@ -72,7 +72,7 @@ This is for testing purposes, depending on your workload Storage Spaces Direct i
 To know all script deployment options, please execute the script wihtout any parameter.
 
 ```
-pmcadmin@pmarques-pc01:/mnt/c/data/git/storagespaces-standalone-template$ ./Deploy-AzureResourceGroup.sh
+paulo@Azure:~/clouddrive/storagespaces-standalone-template$ ./Deploy-AzureResourceGroup.sh
 
 No options were passed
 
