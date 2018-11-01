@@ -7,15 +7,15 @@ param
     [string]$FullAccess="Everyone"
 )
 
-$columns=(Get-StoragePool -IsPrimordial $true | Get-PhysicalDisk | Where-Object CanPool -eq $True).count
+$Columns=(Get-StoragePool -IsPrimordial $true | Get-PhysicalDisk | Where-Object CanPool -eq $True).count
 
-New-StoragePool –FriendlyName $StoragePoolName –StorageSubsystemFriendlyName "Windows Storage*" –PhysicalDisks (Get-PhysicalDisk –CanPool $True)
+New-StoragePool -FriendlyName $StoragePoolName -StorageSubSystemFriendlyName "Windows Storage*" -PhysicalDisks (Get-PhysicalDisk -CanPool $True)
 
-$disk = New-VirtualDisk –StoragePoolFriendlyName $StoragePoolName –FriendlyName $VirtualDiskName –ResiliencySettingName "Simple" –UseMaximumSize -NumberOfColumns $columns
-$disk | Initialize-Disk –Passthru | New-Partition –AssignDriveLetter –UseMaximumSize | Format-Volume -OutVariable Volume
+$Disk = New-VirtualDisk -StoragePoolFriendlyName $StoragePoolName -FriendlyName $VirtualDiskName -ResiliencySettingName "Simple" -UseMaximumSize -NumberOfColumns $Columns
+$Disk | Initialize-Disk -PassThru | New-Partition -AssignDriveLetter -UseMaximumSize | Format-Volume -OutVariable Volume
 
-$path = "$($volume.DriveLetter):\$FolderName" 
-New-Item -Path $path -ItemType Directory
+$Path = "$($Volume.DriveLetter):\$FolderName"
+New-Item -Path $Path -ItemType Directory
 
 New-SmbShare -Name $SharedFolderName -Path $path -FullAccess $FullAccess -ContinuouslyAvailable $false -CachingMode None
 
