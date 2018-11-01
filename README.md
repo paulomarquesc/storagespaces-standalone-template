@@ -70,28 +70,27 @@ This is for testing purposes, depending on your workload Storage Spaces Direct i
         ```
 
 To know all script deployment options, please execute the script wihtout any parameter.
-    
-    ```bash
-    pmcadmin@pmarques-pc01:/mnt/c/data/git/storagespaces-standalone-template$ ./Deploy-AzureResourceGroup.sh
 
-    No options were passed
+```
+pmcadmin@pmarques-pc01:/mnt/c/data/git/storagespaces-standalone-template$ ./Deploy-AzureResourceGroup.sh
 
-    Usage:
-    ./Deploy-AzureResourceGroup.sh [OPTIONS]
-        -g <RESOURCE_GROUP>                [Required]: Name of initial esource group for deployment. Creates or updates resource group.
-        -l <REGION>                        [Required]: Location in which to create resources.
-        -s <STORAGE_ACCT_NAME>             [Required]: Name of Storage Account. Creates or updates Storage Account.
-        -v <KEY_VAULT_NAME>                [Required]: Azure Key Vault name administrator password is stored. Defaults to: sofs-KV
-        -r <STORAGE_ACCT_RG_NAME>          Name of the resource group where the Storage Account exists, it will default to the Resource Group name pass in -g argument.
-        -t <TEMPLATE_PATH>                 Path to template file (relative to execution location of this script). Default: azuredeploy.json
-        -p <TEMPLATE_PARAM_PATH>           Path to template parameter file (relative to execution location of this script). Default: azuredeploy.parameters.json
-        -a <KV_ADMIN_PASSWORD_SECRET_NAME> Azure Key Vault secret name that holds the local administrator password. Defaults to: adminPassword
-    ```
+No options were passed
+
+Usage:
+./Deploy-AzureResourceGroup.sh [OPTIONS]
+    -g <RESOURCE_GROUP>                [Required]: Name of initial esource group for deployment. Creates or updates resource group.
+    -l <REGION>                        [Required]: Location in which to create resources.
+    -s <STORAGE_ACCT_NAME>             [Required]: Name of Storage Account. Creates or updates Storage Account.
+    -v <KEY_VAULT_NAME>                [Required]: Azure Key Vault name administrator password is stored. Defaults to: sofs-KV
+    -r <STORAGE_ACCT_RG_NAME>          Name of the resource group where the Storage Account exists, it will default to the Resource Group name pass in -g argument.
+    -t <TEMPLATE_PATH>                 Path to template file (relative to execution location of this script). Default: azuredeploy.json
+    -p <TEMPLATE_PARAM_PATH>           Path to template parameter file (relative to execution location of this script). Default: azuredeploy.parameters.json
+    -a <KV_ADMIN_PASSWORD_SECRET_NAME> Azure Key Vault secret name that holds the local administrator password. Defaults to: adminPassword
 
 Example:
 
-      ./Deploy-AzureResourceGroup.sh -g testRg -l westus -v keyvaultName
-
+    ./Deploy-AzureResourceGroup.sh -g testRg -l westus -v keyvaultName
+```
 
 
 #### Template parameters and descriptions
