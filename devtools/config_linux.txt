@@ -1,0 +1,18 @@
+create_anchors=yes
+
+*Host Definition
+
+*FileSystem Definition
+
+fsd=share,anchor=!path,depth=1,width=1,files=6,size=20G
+fsd=share1,anchor=!path,depth=1,width=1,files=1,size=10G
+
+*FileSystem Workload Definition
+
+fwd=writeFiles,fsd=(share),operation=write,fileio=sequential,fileselect=random,threads=2,xfersizes=!xfersize
+fwd=readFiles,fsd=(share1),operation=read,fileio=sequential,fileselect=random,threads=1,xfersizes=!xfersize
+
+*Run Definition
+
+rd=rd1,fwd=(writeFiles),fwdrate=max,format=yes,elapsed=120
+rd=rd2,fwd=(readFiles),fwdrate=max,format=yes,elapsed=120
